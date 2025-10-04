@@ -1,63 +1,42 @@
-import { useState, useEffect } from "react";
-import ky, { HTTPError } from "ky";
+import { useEffect } from "react";
 import { ProductCard } from "../Index";
-import type { Product } from "../../types";
 import styles from "./ProductList.module.scss";
+import { fetchProducts } from "../../reducers/productSlice";
+import { useTypedDispatch, useTypedSelector } from "../../hooks/redux";
 
-type ProductListProps = {
-  onAddToCart: (product: Product, quantity: number) => void;
-};
+export default function ProductList() {
+  const isLoading = useTypedSelector((state) => state.products.isLoading);
+  const products = useTypedSelector((state) => state.products.products);
+  const error = useTypedSelector((state) => state.products.error);
 
-export default function ProductList({ onAddToCart }: ProductListProps) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [products, setProducts] = useState<Product[]>([]);
-
-  async function getAllProduct() {
-    try {
-      setIsLoading(true);
-      const product: Product[] = await ky
-        .get(
-          "https://res.cloudinary.com/sivadass/raw/upload/v1535817394/json/products.json"
-        )
-        .json();
-      setProducts(product);
-    } catch (e) {
-      if (e instanceof HTTPError) {
-        console.log(`Ошибка HTTP: ${e.response.status}`);
-      } else if (e instanceof Error) {
-        console.log("Ошибка:", e.message);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  const dispatch = useTypedDispatch();
 
   useEffect(() => {
-    getAllProduct();
-  }, []);
+    dispatch(fetchProducts());
+  }, [dispatch]);
 
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Catalog</h1>
       <div className={styles.grid}>
+        {error && <h1>{error}</h1>}
         {isLoading
           ? Array.from({ length: 30 }).map((_, i) => (
               <ProductCard key={i} isLoading={true} />
             ))
-          : products.map((p) => {
-              const [name, weight] = p.name.split("-");
+          : products.map((product) => {
+              const [name, weight] = product.name.split("-");
               const productWithWeight = {
-                ...p,
+                ...product,
                 name: name.trim(),
                 weight: weight?.trim(),
               };
 
               return (
                 <ProductCard
-                  key={p.id}
+                  key={product.id}
                   product={productWithWeight}
                   isLoading={false}
-                  onAddToCart={onAddToCart}
                 />
               );
             })}

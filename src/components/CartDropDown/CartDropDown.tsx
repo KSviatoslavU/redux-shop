@@ -1,19 +1,14 @@
 import { Text, Button, Image, ScrollArea, Divider } from "@mantine/core";
-import type { CartItem } from "../../types";
 import EmptyCard from "../../assets/emptyCart.svg?react";
 import styles from "./CartDropDown.module.scss";
+import { changeQuanity } from "../../reducers/cartSlice";
+import { useTypedSelector, useTypedDispatch } from "../../hooks/redux";
 
-type CartDropdownProps = {
-  cart: CartItem[];
-  onChangeQuantity: (id: number, newQuantity: number) => void;
-};
-
-export default function CartDropdown({
-  cart,
-  onChangeQuantity,
-}: CartDropdownProps) {
+export default function CartDropdown() {
+  const cart = useTypedSelector((state) => state.cart.cart);
   const isEmpty = cart.length === 0;
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const dispatch = useTypedDispatch();
 
   if (isEmpty) {
     return (
@@ -55,7 +50,14 @@ export default function CartDropdown({
                   size="xs"
                   variant="outline"
                   className={styles.countButton}
-                  onClick={() => onChangeQuantity(item.id, item.quantity - 1)}
+                  onClick={() =>
+                    dispatch(
+                      changeQuanity({
+                        id: item.id,
+                        quantity: item.quantity - 1,
+                      })
+                    )
+                  }
                   disabled={item.quantity <= 1}
                 >
                   -
@@ -65,7 +67,14 @@ export default function CartDropdown({
                   size="xs"
                   variant="outline"
                   className={styles.countButton}
-                  onClick={() => onChangeQuantity(item.id, item.quantity + 1)}
+                  onClick={() =>
+                    dispatch(
+                      changeQuanity({
+                        id: item.id,
+                        quantity: item.quantity + 1,
+                      })
+                    )
+                  }
                 >
                   +
                 </Button>

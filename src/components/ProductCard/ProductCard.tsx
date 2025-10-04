@@ -11,22 +11,22 @@ import { useState } from "react";
 import CartIcon from "../../assets/cart.svg?react";
 import type { Product } from "../../types";
 import styles from "./ProductCard.module.scss";
+import { useTypedDispatch } from "../../hooks/redux";
+import { addToCart } from "../../reducers/cartSlice";
 
 type ProductCardProps = {
   product?: Product & { weight?: string };
   isLoading: boolean;
-  onAddToCart?: (product: Product, quantity: number) => void;
 };
 
-export default function ProductCard({
-  product,
-  isLoading,
-  onAddToCart,
-}: ProductCardProps) {
+export default function ProductCard({ product, isLoading }: ProductCardProps) {
   const [quantity, setQuantity] = useState(1);
-
+  const dispatch = useTypedDispatch();
   const increaseQuantity = () => setQuantity((prev) => prev + 1);
   const decreaseQuantity = () => setQuantity((prev) => Math.max(1, prev - 1));
+  const handleAddToCart = () => {
+    dispatch(addToCart({ product, quantity }));
+  };
 
   if (isLoading) {
     return (
@@ -79,7 +79,7 @@ export default function ProductCard({
       <div className={styles.buttonDiv}>
         <Text fw={600}>${price}</Text>
         <Button
-          onClick={() => onAddToCart?.(product, quantity)}
+          onClick={handleAddToCart}
           className={styles.myButton}
           fullWidth
           radius="md"

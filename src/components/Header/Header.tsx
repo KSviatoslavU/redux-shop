@@ -1,17 +1,13 @@
 import { Badge, Button, Popover, Text } from "@mantine/core";
-import type { CartItem } from "../../types";
 import CartIcon from "../../assets/cart.svg?react";
 import { useState } from "react";
 import { CartDropdown } from "../Index";
 import styles from "./Header.module.scss";
+import { useTypedSelector } from "../../hooks/redux";
 
-type HeaderProps = {
-  cart: CartItem[];
-  onChangeQuantity: (id: number, newQuantity: number) => void;
-};
-
-export default function Header({ cart, onChangeQuantity }: HeaderProps) {
+export default function Header() {
   const [opened, setOpened] = useState(false);
+  const cart = useTypedSelector((state) => state.cart.cart);
 
   return (
     <header className={styles.header}>
@@ -58,7 +54,7 @@ export default function Header({ cart, onChangeQuantity }: HeaderProps) {
           </Popover.Target>
 
           <Popover.Dropdown>
-            <CartDropdown cart={cart} onChangeQuantity={onChangeQuantity} />
+            <CartDropdown />
           </Popover.Dropdown>
         </Popover>
       </div>
