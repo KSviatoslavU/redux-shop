@@ -5,7 +5,7 @@ import svgr from "vite-plugin-svgr";
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: "/shop/",
+  base: "/redux-shop/",
   plugins: [react(), svgr()],
   test: {
     globals: true,
