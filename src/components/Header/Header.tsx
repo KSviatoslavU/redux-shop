@@ -1,7 +1,7 @@
 import { Badge, Button, Popover, Text } from "@mantine/core";
 import CartIcon from "../../assets/cart.svg?react";
 import { useState } from "react";
-import { CartDropdown } from "../Index";
+import { CartDropdown } from "../index";
 import styles from "./Header.module.scss";
 import { useTypedSelector } from "../../hooks/redux";
 

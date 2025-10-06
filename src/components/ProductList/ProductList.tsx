@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-import { ProductCard } from "../Index";
+import { ProductCard } from "../index";
 import styles from "./ProductList.module.scss";
 import { fetchProducts } from "../../reducers/productSlice";
 import { useTypedDispatch, useTypedSelector } from "../../hooks/redux";
+import type { Product } from "../../types";
 
 export default function ProductList() {
   const isLoading = useTypedSelector((state) => state.products.isLoading);
@@ -15,6 +16,14 @@ export default function ProductList() {
     dispatch(fetchProducts());
   }, [dispatch]);
 
+  const productWithWeight = (product: Product) => {
+    const [name, weight] = product.name.split("-");
+    return {
+      ...product,
+      name: name.trim(),
+      weight: weight?.trim(),
+    };
+  };
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Catalog</h1>
@@ -25,17 +34,10 @@ export default function ProductList() {
               <ProductCard key={i} isLoading={true} />
             ))
           : products.map((product) => {
-              const [name, weight] = product.name.split("-");
-              const productWithWeight = {
-                ...product,
-                name: name.trim(),
-                weight: weight?.trim(),
-              };
-
               return (
                 <ProductCard
                   key={product.id}
-                  product={productWithWeight}
+                  product={productWithWeight(product)}
                   isLoading={false}
                 />
               );
